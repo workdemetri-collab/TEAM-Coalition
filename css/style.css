@@ -57,3 +57,11 @@ nav ul{display:block}li.top{border-top:1px solid var(--line);display:flex;flex-w
 .split{grid-template-columns:1fr;min-height:0}.split>.ph{min-height:240px}.split.flip>.ph{order:0}.paths,.stats{grid-template-columns:1fr}.layout{grid-template-columns:1fr}.side{position:static}.fgrid{grid-template-columns:1fr 1fr}.hero{padding:56px 0 40px}}
 
 .arch{border-top:1px solid var(--line);padding-top:28px;margin-top:36px}
+/* logo + photo tweaks */
+.bar{min-height:84px}
+.logo{display:flex;align-items:center;gap:14px}
+.logo img{max-height:none;height:60px;width:auto;border-radius:8px;background:#fff}
+.logo::after{content:"Techniques for Effective Alcohol Management";font-size:.78rem;font-weight:600;line-height:1.3;color:var(--muted);max-width:175px;border-left:2px solid var(--accent);padding-left:12px}
+[data-photo=venue]{background-position:center 30%}
+@media(max-width:1180px){.logo::after{display:none}}
+@media(max-width:920px){.bar{min-height:72px}.logo img{height:48px}}
