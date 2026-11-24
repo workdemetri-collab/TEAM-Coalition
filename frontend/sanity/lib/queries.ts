@@ -11,6 +11,7 @@ const postFields = /* groq */ `
   coverImage,
   "date": coalesce(date, _updatedAt),
   "author": author->{firstName, lastName, picture},
+  categories,
 `
 
 const linkReference = /* groq */ `
@@ -98,4 +99,41 @@ export const postPagesSlugs = defineQuery(`
 export const pagesSlugs = defineQuery(`
   *[_type == "page" && defined(slug.current)]
   {"slug": slug.current}
+`)
+
+// ---- TEAM Coalition additions ----
+
+export const latestPostsQuery = defineQuery(`
+  *[_type == "post" && defined(slug.current)] | order(date desc, _updatedAt desc) [0...$limit] {
+    _id,
+    "title": coalesce(title, "Untitled"),
+    "slug": slug.current,
+    excerpt,
+    "date": coalesce(date, _updatedAt)
+  }
+`)
+
+export const newsListQuery = defineQuery(`
+  {
+    "total": count(*[_type == "post" && defined(slug.current) && ($cat == "" || $cat in categories) && ($from == "" || date >= $from) && ($to == "" || date < $to)]),
+    "items": *[_type == "post" && defined(slug.current) && ($cat == "" || $cat in categories) && ($from == "" || date >= $from) && ($to == "" || date < $to)] | order(date desc, _updatedAt desc) [$start...$end] {
+      _id,
+      "title": coalesce(title, "Untitled"),
+      "slug": slug.current,
+      excerpt,
+      "date": coalesce(date, _updatedAt),
+      categories
+    }
+  }
+`)
+
+export const searchQuery = defineQuery(`
+  *[_type in ["page", "post"] && defined(slug.current) && (coalesce(title, name) match $q || pt::text(content) match $q || pt::text(pageBuilder[_type == "infoSection"][0].content) match $q)] | order(_type asc, date desc) [0...40] {
+    _id,
+    _type,
+    "title": coalesce(title, name),
+    "slug": slug.current,
+    date,
+    "snippet": coalesce(excerpt, pt::text(pageBuilder[_type == "infoSection"][0].content[0...3]))
+  }
 `)

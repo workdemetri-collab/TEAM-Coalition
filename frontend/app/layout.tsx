@@ -2,16 +2,14 @@ import './globals.css'
 
 import {SpeedInsights} from '@vercel/speed-insights/next'
 import type {Metadata} from 'next'
-import {Inter, IBM_Plex_Mono} from 'next/font/google'
+import {Jost, Montserrat} from 'next/font/google'
 import {draftMode} from 'next/headers'
-import {toPlainText} from 'next-sanity'
 import {VisualEditing} from 'next-sanity/visual-editing'
 import {Toaster} from 'sonner'
 
 import DraftModeToast from '@/app/components/DraftModeToast'
 import Footer from '@/app/components/Footer'
 import Header from '@/app/components/Header'
-import * as demo from '@/sanity/lib/demo'
 import {sanityFetch, SanityLive} from '@/sanity/lib/live'
 import {settingsQuery} from '@/sanity/lib/queries'
 import {resolveOpenGraphImage} from '@/sanity/lib/utils'
@@ -27,8 +25,9 @@ export async function generateMetadata(): Promise<Metadata> {
     // Metadata should never contain stega
     stega: false,
   })
-  const title = settings?.title || demo.title
-  const description = settings?.description || demo.description
+  const title = 'TEAM Coalition'
+  const description =
+    'Training and fan programs that make responsible alcohol service part of great hospitality at sports and entertainment venues.'
 
   const ogImage = resolveOpenGraphImage(settings?.ogImage)
   let metadataBase: URL | undefined = undefined
@@ -45,22 +44,24 @@ export async function generateMetadata(): Promise<Metadata> {
       template: `%s | ${title}`,
       default: title,
     },
-    description: toPlainText(description),
+    description,
     openGraph: {
       images: ogImage ? [ogImage] : [],
     },
   }
 }
 
-const inter = Inter({
-  variable: '--font-inter',
+// Free look-alikes for Futura (headings) and Century Gothic (text), used only on devices that do not have the real fonts.
+const jost = Jost({
+  variable: '--font-jost',
+  weight: ['500', '700'],
   subsets: ['latin'],
   display: 'swap',
 })
 
-const ibmPlexMono = IBM_Plex_Mono({
-  variable: '--font-ibm-plex-mono',
-  weight: ['400'],
+const montserrat = Montserrat({
+  variable: '--font-montserrat',
+  weight: ['400', '700'],
   subsets: ['latin'],
   display: 'swap',
 })
@@ -69,9 +70,10 @@ export default async function RootLayout({children}: LayoutProps<'/'>) {
   const {isEnabled: isDraftMode} = await draftMode()
 
   return (
-    <html lang="en" className={`${inter.variable} ${ibmPlexMono.variable} bg-white text-black`}>
+    <html lang="en" className={`${jost.variable} ${montserrat.variable}`}>
       <body>
-        <section className="min-h-screen pt-24">
+        <a className="skip" href="#main">Skip to content</a>
+        <div className="min-h-screen">
           {/* The <Toaster> component is responsible for rendering toast notifications used in /app/client-utils.ts and /app/components/DraftModeToast.tsx */}
           <Toaster />
           {isDraftMode && (
@@ -84,9 +86,9 @@ export default async function RootLayout({children}: LayoutProps<'/'>) {
           {/* The <SanityLive> component is responsible for making all sanityFetch calls in your application live, so should always be rendered. */}
           <SanityLive onError={handleError} />
           <Header />
-          <main className="">{children}</main>
+          <main id="main">{children}</main>
           <Footer />
-        </section>
+        </div>
         <SpeedInsights />
       </body>
     </html>

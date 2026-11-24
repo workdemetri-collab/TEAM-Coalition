@@ -5,6 +5,7 @@ import {createDataAttribute, CreateDataAttributeProps} from 'next-sanity'
 import {Link} from '@/sanity.types'
 import {dataset, projectId, studioUrl} from '@/sanity/lib/api'
 import {DereferencedLink} from '@/sanity/lib/types'
+import {MEDIA_BASE} from '@/lib/media'
 
 const builder = createImageUrlBuilder({
   projectId: projectId || '',
@@ -41,7 +42,8 @@ export function linkResolver(link: Link | DereferencedLink | undefined) {
 
   switch (link.linkType) {
     case 'href':
-      return link.href || null
+      // Old PDFs and documents are still hosted on the WordPress site
+      return link.href ? (/^\/(wp-content\/uploads|documents)\//.test(link.href) ? `${MEDIA_BASE}${link.href}` : link.href) : null
     case 'page':
       if (link?.page && typeof link.page === 'string') {
         return `/${link.page}`
